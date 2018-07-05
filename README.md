@@ -1,2 +1,2 @@
 # security
-This is Spring boot + Rest + Spring security demo.
+This is Spring boot + Rest + Spring security + MyBatis(annotation) + Mysql demo.
