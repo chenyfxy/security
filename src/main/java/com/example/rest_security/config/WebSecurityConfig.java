@@ -6,8 +6,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
+import com.example.rest_security.exception.MyAccessDeniedHandler;
 import com.example.rest_security.service.CustomUserService;
+import com.example.rest_security.service.MyFilterSecurityInterceptor;
 import com.example.rest_security.service.MyPasswordEncoder;
 
 @Configuration
@@ -15,21 +18,30 @@ import com.example.rest_security.service.MyPasswordEncoder;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	CustomUserService customUserService;
+	private CustomUserService customUserService;
+	
+	@Autowired
+    private MyFilterSecurityInterceptor myFilterSecurityInterceptor;
+	
+	@Autowired
+	private MyAccessDeniedHandler accessDeniedHandler;
 	
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	http
     			.authorizeRequests()
     				.antMatchers("/", "/home", "/about").permitAll()
-    				.anyRequest().authenticated() //任何请求,登录后可以访问
+    				.anyRequest().authenticated()
                 .and()
                 .formLogin()
                 	.loginPage("/login")
-                	.permitAll() //登录页面用户任意访问
+                	.permitAll()
                 	.successForwardUrl("/home").and()
                 .logout()
-                	.permitAll().invalidateHttpSession(true); //注销行为任意访问
+                	.permitAll().invalidateHttpSession(true).and()
+                	.exceptionHandling().accessDeniedHandler(this.accessDeniedHandler);
+    	
+    	http.addFilterBefore(this.myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
     }
     
     @Autowired

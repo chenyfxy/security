@@ -25,13 +25,13 @@
         <h1 th:text="${msg.title}"></h1>
 
         <p class="bg-primary" th:text="${msg.content}"></p>
+        
+        <div sec:authorize="hasRole('ROLE_HOME')">
+            <p class="bg-info" th:text="${msg.etraInfo}"></p>
+        </div>
 
         <div sec:authorize="hasRole('ROLE_ADMIN')"> <!-- 用户类型为ROLE_ADMIN 显示 -->
-            <p class="bg-info" th:text="${msg.etraInfo}"></p>
-        </div>  
-
-        <div sec:authorize="hasRole('ROLE_USER')"> <!-- 用户类型为 ROLE_USER 显示 -->
-            <p class="bg-info">无更多信息显示</p>
+            <p class="bg-info">You have 'ROLE_ADMIN' autoritity</p>
         </div>  
 
         <form th:action="@{/logout}" method="post">
